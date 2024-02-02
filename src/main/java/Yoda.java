@@ -15,18 +15,21 @@ public class Yoda {
 
     public Yoda(String filePath) {
         Storage storage = new Storage(filePath);
-        TaskList tasks;
+        TaskList tasks = new TaskList(null); // Initialize with an empty list
+
         try {
-            // Load tasks from the storage
             tasks = storage.loadTasks();
+            // Use 'tasks' as needed
         } catch (IOException e) {
-            // If there's an error loading tasks, start with an empty task list
             System.out.println("Error loading tasks: " + e.getMessage());
-            tasks = new TaskList(null);
+            // Handle the exception as needed
         }
-        // Initialize YodaUI with the loaded tasks
+
+
+        // Initialize YodaUI with the tasks (empty or loaded)
         this.yodaUI = new YodaUI("Yoda", tasks, storage);
     }
+
 
     public static void main(String[] args) {
         // Initialize Yoda with the file path for storing tasks

@@ -1,9 +1,17 @@
 package yoda.storage;
-import yoda.task.*;
+import yoda.task.Task;
+import yoda.task.TaskList;
+import yoda.task.Todo;
+import yoda.task.Deadline;
+import yoda.task.Event;
 import yoda.datetimeutil.DateTimeUtil;
-
-import java.io.*;
-import java.nio.file.*;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +36,7 @@ public class Storage {
             writeToFile(taskStrings);
         }
     }
+
 
     private boolean isFileContentDifferent(List<String> taskStrings) throws IOException {
         if (!Files.exists(path)) {
@@ -87,23 +96,30 @@ public class Storage {
     }
 
 
+
+
     private Task fileToTaskFormat(String line) {
         String[] parts = line.split(" \\| ");
-        String type = parts[0];
-        boolean isDone = parts[1].equals("1");
-        String description = parts[2];
+        String type = parts[0].trim();
+        boolean isDone = parts[1].trim().equals("1");
+        String description = parts[2].trim();
 
         switch (type) {
             case "T":
                 return createTodoTask(isDone, description);
             case "D":
-                return createDeadlineTask(isDone, description, parts[3]);
+                return createDeadlineTask(isDone, description, parts[3].trim());
             case "E":
-                return createEventTask(isDone, description, parts[3], parts[4]);
+                // Split the event timing part into "from" and "to" components
+                String[] eventTimings = parts[3].split(" to ");
+                String from = eventTimings[0].trim();
+                String to = eventTimings[1].trim();
+                return createEventTask(isDone, description, from, to);
             default:
                 return null;
         }
     }
+
 
 
 
